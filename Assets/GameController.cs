@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Analytics;
 
 public class GameController : MonoBehaviour {
 
@@ -32,6 +33,10 @@ public class GameController : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Finish")
         {
+            Analytics.CustomEvent("Game Won", new Dictionary<string, object>
+            {
+                {"Nazis punched", totalNazis}
+            });
             SceneManager.LoadScene("WinScreen");
         }
     }
