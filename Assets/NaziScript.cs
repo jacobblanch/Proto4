@@ -12,11 +12,13 @@ public class NaziScript : MonoBehaviour {
     bool beenHit;
     public AudioSource ouchSound;
     public Rigidbody rb;
+    GameController gameManagerScript;
 
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
+        gameManagerScript = player.GetComponent<GameController>();
 	}
 	
 	// Update is called once per frame
@@ -45,13 +47,17 @@ public class NaziScript : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Player")
         {
-            billboarding = false;
-            beenHit = true;
-            retort.SetActive(false);
-            Vector3 dir = collision.contacts[0].point - transform.position;
-            dir = -dir.normalized;
-            GetComponent<Rigidbody>().AddForce(dir * force);
-            ouchSound.Play();
+            if (beenHit == false)
+            {
+                billboarding = false;
+                beenHit = true;
+                retort.SetActive(false);
+                Vector3 dir = collision.contacts[0].point - transform.position;
+                dir = -dir.normalized;
+                GetComponent<Rigidbody>().AddForce(dir * force);
+                ouchSound.Play();
+                gameManagerScript.nazisPunched++;
+            }
         }
     }
 }
