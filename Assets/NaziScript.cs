@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 
 public class NaziScript : MonoBehaviour {
 
@@ -13,6 +14,8 @@ public class NaziScript : MonoBehaviour {
     public AudioSource ouchSound;
     public Rigidbody rb;
     GameController gameManagerScript;
+    public float timer;
+    public float timeLimit;
 
 
     // Use this for initialization
@@ -24,10 +27,23 @@ public class NaziScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-            Application.Quit();
+        if (beenHit)
+            timer += Time.deltaTime;
 
-        Debug.Log("Billboarding = " + billboarding);
+        if (!GetComponent<Renderer>().isVisible)
+        {
+            if (timer > timeLimit)
+            {
+                transform.rotation = Quaternion.Euler(0, transform.rotation.y, transform.rotation.x);
+                transform.position = new Vector3(transform.position.x, 1, transform.position.z);
+                timer = 0;
+                beenHit = false;
+                retort.SetActive(false);
+                billboarding = true;
+                rb.isKinematic = true;
+            }
+        }
+
         if (Vector3.Distance(transform.position, player.transform.position) <= 8f)
             if (!retort.activeInHierarchy)
                 if (!beenHit)
@@ -56,7 +72,7 @@ public class NaziScript : MonoBehaviour {
                 dir = -dir.normalized;
                 GetComponent<Rigidbody>().AddForce(dir * force);
                 ouchSound.Play();
-                gameManagerScript.nazisPunched++;
+                Analytics.CustomEvent("naziPunched");
             }
         }
     }
